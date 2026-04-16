@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freeplay Games</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo"><span class="free">Free</span><span class="play">play</span><span class="games">Games</span></div>
+    <div class="header-btns">
+      <a href="settings.html">⚙ Settings</a>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Search games...">
+  </div>
+
+  <!-- GAME GRID -->
+  <div class="game-grid" id="game-grid"></div>
+
+  <!-- IFRAME PLAYER OVERLAY -->
+  <div class="iframe-player" id="iframe-player">
+    <div class="topbar">
+      <span class="title" id="game-title">Game</span>
+      <button onclick="closeIframePlayer()">✕ Close</button>
+    </div>
+    <iframe id="game-iframe" sandbox="allow-scripts allow-same-origin" allowfullscreen></iframe>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">Freeplay Games</div>
+
+  <!-- SCRIPTS -->
+  <script src="js/settings.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Freeplay Games</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo"><span class="free">Free</span><span class="play">play</span><span class="games">Games</span></div>
+    <div class="header-btns">
+      <a href="index.html">← Back</a>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="settings-page">
+    <h2>⚙ Settings</h2>
+
+    <!-- GAME OPEN MODE -->
+    <div class="settings-section">
+      <h3>Game Open Mode</h3>
+      <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:10px;">
+        <label>How should games open?</label>
+        <select id="setting-open-mode" class="setting-select">
+          <option value="iframe">Iframe — overlay on page (90% × 87%)</option>
+          <option value="newtab">New Tab — opens file:// link in a new tab</option>
+          <option value="sametab">Same Tab — replaces this tab with the game</option>
+          <option value="blank">about:blank — game inside an about:blank window</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TAB DISGUISE -->
+    <div class="settings-section">
+      <h3>Tab Disguise</h3>
+
+      <div class="setting-row">
+        <div>
+          <label>Enable Tab Disguise</label>
+          <div class="sub">Changes the tab title to something else</div>
+        </div>
+        <div class="toggle">
+          <input type="checkbox" id="setting-tab-disguise">
+          <span class="slider"></span>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <label>Disguise Title</label>
+        <input type="text" class="setting-input" id="setting-disguise-title" value="Google Docs">
+      </div>
+    </div>
+
+    <!-- PANIC KEY -->
+    <div class="settings-section">
+      <h3>Panic Key</h3>
+
+      <div class="setting-row">
+        <div>
+          <label>Key</label>
+          <div class="sub">Press this key to instantly redirect</div>
+        </div>
+        <input type="text" class="setting-input" id="setting-panic-key" value="Escape" readonly style="cursor:pointer;">
+      </div>
+
+      <div class="setting-row">
+        <label>Redirect URL</label>
+        <input type="text" class="setting-input" id="setting-panic-url" value="https://classroom.google.com" style="width:240px;">
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SAVED TOAST -->
+  <div class="saved-toast" id="saved-toast">✓ Saved</div>
+
+  <!-- FOOTER -->
+  <div class="footer">Freeplay Games</div>
+
+  <!-- SCRIPTS -->
+  <script src="js/settings.js"></script>
+  <script>
+    // ===== SETTINGS PAGE LOGIC =====
+
+    function showSaved() {
+      const toast = document.getElementById("saved-toast");
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1200);
+    }
+
+    function loadSettingsUI() {
+      Settings.init();
+
+      // Open mode dropdown
+      document.getElementById("setting-open-mode").value = Settings.get("openMode");
+
+      // Tab disguise
+      document.getElementById("setting-tab-disguise").checked = Settings.get("tabDisguise");
+      document.getElementById("setting-disguise-title").value = Settings.get("disguiseTitle");
+
+      // Panic key
+      document.getElementById("setting-panic-key").value = Settings.get("panicKey");
+      document.getElementById("setting-panic-url").value = Settings.get("panicURL");
+    }
+
+    // ===== EVENT LISTENERS =====
+
+    // Open mode dropdown
+    document.getElementById("setting-open-mode").addEventListener("change", (e) => {
+      Settings.set("openMode", e.target.value);
+      showSaved();
+    });
+
+    // Tab disguise toggle
+    document.getElementById("setting-tab-disguise").addEventListener("change", (e) => {
+      Settings.set("tabDisguise", e.target.checked);
+      Settings.applyTabDisguise();
+      showSaved();
+    });
+
+    // Disguise title
+    document.getElementById("setting-disguise-title").addEventListener("input", (e) => {
+      Settings.set("disguiseTitle", e.target.value);
+      if (Settings.get("tabDisguise")) {
+        document.title = e.target.value;
+      }
+      showSaved();
+    });
+
+    // Panic key capture — temporarily unbind panic so pressing a key doesn't redirect
+    document.getElementById("setting-panic-key").addEventListener("click", function () {
+      this.value = "Press a key...";
+      Settings._capturingKey = true;
+      const input = this;
+      const handler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        input.value = e.key;
+        Settings.set("panicKey", e.key);
+        Settings._capturingKey = false;
+        showSaved();
+        document.removeEventListener("keydown", handler, true);
+      };
+      document.addEventListener("keydown", handler, true);
+    });
+
+    // Panic URL
+    document.getElementById("setting-panic-url").addEventListener("input", (e) => {
+      Settings.set("panicURL", e.target.value);
+      showSaved();
+    });
+
+    loadSettingsUI();
+  </script>
+
+</body>
+</html>
